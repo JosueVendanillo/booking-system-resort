@@ -1,13 +1,17 @@
 package com.bluebell.project.model;
 
-import jakarta.persistence.Table;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.*;
 
+@Entity
 @Table(name = "amenities")
 public class Amenity {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false)
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String description;
 
     public Amenity() {}
@@ -18,8 +22,15 @@ public class Amenity {
     }
 
     // getters & setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

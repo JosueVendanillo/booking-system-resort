@@ -5,7 +5,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/dashboard")
-@CrossOrigin(origins = "http://localhost:4173")
+@CrossOrigin(origins = "*")
 public class DashboardController {
 
     @GetMapping
