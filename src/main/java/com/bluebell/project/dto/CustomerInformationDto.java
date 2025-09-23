@@ -7,6 +7,8 @@ public class CustomerInformationDto {
     private String email;
     private String contactNumber;
 
+    private String gender;
+
     public CustomerInformationDto() {}
 
     public CustomerInformationDto(Long id, String fullname, String email, String contactNumber) {
@@ -28,4 +30,12 @@ public class CustomerInformationDto {
 
     public String getContactNumber() { return contactNumber; }
     public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 }

@@ -3,6 +3,8 @@ package com.bluebell.project.model;
 import com.bluebell.project.util.BookingIdGenerator;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(
@@ -53,13 +55,10 @@ public class Booking {
     @JoinColumn(name = "customer_id")
     private CustomerInformation customer;
 
-    public CustomerInformation getCustomer() {
-        return customer;
-    }
+    // 🔑 New: list of payments linked to this booking
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments = new ArrayList<>();
 
-    public void setCustomer(CustomerInformation customer) {
-        this.customer = customer;
-    }
 
     public Booking() {}
 
@@ -114,4 +113,21 @@ public class Booking {
 
     public String getPaymentStatus() { return paymentStatus; }
     public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
+
+    public CustomerInformation getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomerInformation customer) {
+        this.customer = customer;
+    }
+
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
 }

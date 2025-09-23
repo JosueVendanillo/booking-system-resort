@@ -89,6 +89,7 @@ public class BookingService {
         ci.setFullname(req.getFullname()); // revisit this
         ci.setEmail(req.getCustomer().getEmail());
         ci.setContactNumber(req.getCustomer().getContactNumber());
+        ci.setGender(req.getCustomer().getGender());
 
         Booking saved = repo.save(b);
         return toDto(saved);
