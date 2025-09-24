@@ -3,11 +3,23 @@ package com.bluebell.project.dto;
 import java.time.LocalDateTime;
 
 public class PaymentCreateRequest {
+
+    private String bookingCode;
     private Double amount;
     private String paymentMethod;
     private LocalDateTime paymentDate;
 
     // getters / setters
+
+
+    public String getBookingCode() {
+        return bookingCode;
+    }
+
+    public void setBookingCode(String bookingCode) {
+        this.bookingCode = bookingCode;
+    }
+
     public Double getAmount() { return amount; }
     public void setAmount(Double amount) { this.amount = amount; }
 

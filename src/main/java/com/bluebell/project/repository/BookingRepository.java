@@ -31,4 +31,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
 
     Optional<Booking> findByBookingCode(String bookingCode);
+
+
+    @Query("SELECT COUNT(b) FROM Booking b WHERE YEAR(b.createdAt) = YEAR(CURRENT_DATE)")
+    Long countBookingsThisYear();
+
+
+
 }

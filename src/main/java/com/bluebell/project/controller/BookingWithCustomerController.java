@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/bookings-with-customer")
-@CrossOrigin(origins = "*") // React frontend
+//@CrossOrigin(origins = "*") // React frontend
 public class BookingWithCustomerController {
 
     @Autowired

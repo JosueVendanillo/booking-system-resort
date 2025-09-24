@@ -3,6 +3,7 @@ package com.bluebell.project.controller;
 import com.bluebell.project.dto.PaymentCreateRequest;
 import com.bluebell.project.dto.PaymentDto;
 import com.bluebell.project.service.PaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,57 +11,34 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/payments")
-@CrossOrigin(origins = "*") // adjust for your frontend
+//@CrossOrigin(origins = "http://localhost:4173") // React dev server
 public class PaymentController {
 
-    private final PaymentService service;
+    @Autowired
+    private PaymentService paymentService;
 
-    public PaymentController(PaymentService service) {
-        this.service = service;
+    // ✅ Create new payment (using bookingCode)
+    @PostMapping
+    public ResponseEntity<PaymentDto> createPayment(@RequestBody PaymentCreateRequest request) {
+        PaymentDto payment = paymentService.createPayment(request);
+        return ResponseEntity.ok(payment);
     }
 
+    // ✅ Get all payments
     @GetMapping
-    public List<PaymentDto> getAllPayments() {
-        return service.listAll();
+    public ResponseEntity<List<PaymentDto>> getAllPayments() {
+        return ResponseEntity.ok(paymentService.getAllPayments());
     }
 
+    // ✅ Get payment by ID
     @GetMapping("/{id}")
     public ResponseEntity<PaymentDto> getPaymentById(@PathVariable Long id) {
-        PaymentDto payment = service.getById(id);
-        return payment != null ? ResponseEntity.ok(payment) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(paymentService.getPaymentById(id));
     }
 
-    @GetMapping("/booking/{bookingId}")
-    public List<PaymentDto> getPaymentsByBookingId(@PathVariable Long bookingId) {
-        return service.getPaymentsByBookingId(bookingId);
-    }
-
-    @GetMapping("/booking/code/{bookingCode}")
-    public List<PaymentDto> getPaymentsByBookingCode(@PathVariable String bookingCode) {
-        return service.getPaymentsByBookingCode(bookingCode);
-    }
-
-    @PostMapping("/{bookingId}")
-    public ResponseEntity<PaymentDto> createPayment(
-            @PathVariable Long bookingId,
-            @RequestBody PaymentCreateRequest request
-    ) {
-        PaymentDto created = service.createPayment(bookingId, request);
-        return ResponseEntity.ok(created);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<PaymentDto> updatePayment(
-            @PathVariable Long id,
-            @RequestBody PaymentCreateRequest request
-    ) {
-        PaymentDto updated = service.updatePayment(id, request);
-        return ResponseEntity.ok(updated);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
-        service.deletePayment(id);
-        return ResponseEntity.noContent().build();
+    // ✅ Get payments by booking code
+    @GetMapping("/booking/{bookingCode}")
+    public ResponseEntity<List<PaymentDto>> getPaymentsByBookingCode(@PathVariable String bookingCode) {
+        return ResponseEntity.ok(paymentService.getPaymentsByBookingCode(bookingCode));
     }
 }

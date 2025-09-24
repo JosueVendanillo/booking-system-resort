@@ -186,4 +186,9 @@ public class BookingService {
         System.out.println("======================================");
     }
 
+
+    public Long getTotalBookingsThisYear() {
+        return repo.countBookingsThisYear();
+    }
+
 }

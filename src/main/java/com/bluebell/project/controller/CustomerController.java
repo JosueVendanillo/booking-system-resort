@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customers")
-@CrossOrigin(origins = "*") // React frontend
+//@CrossOrigin(origins = "*") // React frontend
 public class CustomerController {
 
     @Autowired

@@ -9,19 +9,42 @@ public class PaymentDto {
     private String paymentMethod;
     private LocalDateTime paymentDate;
 
+    private String status;   // ✅ added status field
+
     // constructor
-    public PaymentDto(Long id, String bookingCode, Double amount, String paymentMethod, LocalDateTime paymentDate) {
+    public PaymentDto(Long id, String bookingCode, Double amount, String paymentMethod, LocalDateTime paymentDate, String status) {
         this.id = id;
         this.bookingCode = bookingCode;
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.paymentDate = paymentDate;
+        this.status = status;
     }
 
     // getters
-    public Long getId() { return id; }
-    public String getBookingCode() { return bookingCode; }
-    public Double getAmount() { return amount; }
-    public String getPaymentMethod() { return paymentMethod; }
-    public LocalDateTime getPaymentDate() { return paymentDate; }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getBookingCode() {
+        return bookingCode;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public LocalDateTime getPaymentDate() {
+        return paymentDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

@@ -18,8 +18,8 @@ public class Payment {
     @Column(name = "amount", nullable = false)
     private Double amount;
 
-    @Column(name = "method", nullable = false, length = 50)
-    private String method; // Cash, Credit, Bank Transfer, etc.
+    @Column(name = "payment_method", nullable = false, length = 50)
+    private String paymentMethod;   // Cash, Credit, Bank Transfer, etc.
 
     @Column(name = "status", nullable = false, length = 30)
     private String status = "PENDING";
@@ -59,8 +59,13 @@ public class Payment {
     public Double getAmount() { return amount; }
     public void setAmount(Double amount) { this.amount = amount; }
 
-    public String getMethod() { return method; }
-    public void setMethod(String method) { this.method = method; }
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
