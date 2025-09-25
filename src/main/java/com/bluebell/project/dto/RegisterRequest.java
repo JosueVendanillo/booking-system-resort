@@ -4,7 +4,7 @@ public class RegisterRequest {
     private String fullName;
     private String email;
     private String password;
-    private String role; // "ADMIN" or "CUSTOMER"
+    private String role; // valid: ADMIN, MODERATOR, CUSTOMER
 
     public String getFullName() {
         return fullName;

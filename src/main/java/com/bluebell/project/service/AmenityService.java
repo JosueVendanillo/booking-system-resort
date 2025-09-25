@@ -38,4 +38,9 @@ public class AmenityService {
     public void delete(String id) {
         repository.deleteById(id);
     }
+
+
+    public Long getTotalAmenities() {
+        return repository.countTotalAmenities();
+    }
 }

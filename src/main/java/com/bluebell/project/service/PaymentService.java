@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +27,11 @@ public class PaymentService {
     @Autowired
     private BookingRepository bookingRepo;
 
+    @Autowired
+    private RoomInventoryService roomInventoryService;
+
     //  Create a new payment
+    @Transactional
     public PaymentDto createPayment(PaymentCreateRequest request) {
         logger.info(" Creating payment for bookingCode={} with amount={} and method={}",
                 request.getBookingCode(), request.getAmount(), request.getPaymentMethod());
@@ -68,6 +73,16 @@ public class PaymentService {
         bookingRepo.save(booking);
 
         logger.info(" Booking id={} updated to paymentStatus=PAID", booking.getId());
+
+        // Deduct room availability when payment is completed
+        try {
+            String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
+            roomInventoryService.decreaseAvailability(normalizedRoom, 1);
+            logger.info(" Room availability updated for type={} (decreased by 1)", normalizedRoom);
+        } catch (Exception e) {
+            logger.error(" Failed to update room availability: {}", e.getMessage());
+            throw new RuntimeException("Payment succeeded, but failed to update room availability.");
+        }
 
         return toDto(saved);
     }
@@ -111,4 +126,31 @@ public class PaymentService {
                 payment.getStatus()
         );
     }
+
+
+    public Long getTotalBills() {
+        return paymentRepo.countTotalBills();
+    }
+
+
+//
+//    @Transactional
+//    public void confirmBookingPayment(Long bookingId) {
+//        Booking booking = bookingRepo.findById(bookingId)
+//                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+//
+//        if (!"PAID".equalsIgnoreCase(booking.getPaymentStatus())) {
+//            booking.setPaymentStatus("PAID");
+//            bookingRepo.save(booking);
+//
+//            // Update room availability
+//            String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
+//            int currentAvailable = roomInventoryService.getAvailableRooms(normalizedRoom);
+//            if (currentAvailable > 0) {
+//                roomInventoryService.updateAvailability(normalizedRoom, currentAvailable - 1);
+//            } else {
+//                throw new IllegalStateException("No more rooms available for type: " + booking.getUnitType());
+//            }
+//        }
+//    }
 }

@@ -24,5 +24,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             "ORDER BY FUNCTION('DATE_FORMAT', p.paymentDate, '%Y-%m')")
     List<Object[]> sumByMonth();
 
+    @Query("SELECT COUNT(*) AS totalBills\n" +
+            "FROM Payment")
+    Long countTotalBills();
 
 }

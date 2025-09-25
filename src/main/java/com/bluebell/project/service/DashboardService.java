@@ -1,9 +1,7 @@
 package com.bluebell.project.service;
 
 import com.bluebell.project.dto.DashboardStats;
-import com.bluebell.project.repository.BookingRepository;
-import com.bluebell.project.repository.CustomerInformationRepository;
-import com.bluebell.project.repository.PaymentRepository;
+import com.bluebell.project.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,10 +17,15 @@ public class DashboardService {
 
     private final CustomerInformationRepository customerInformationRepository;
 
-    public DashboardService(PaymentRepository paymentRepository, BookingRepository bookingRepository, CustomerInformationRepository customerInformationRepository) {
+    private final UserRepository userRepository;
+
+
+
+    public DashboardService(PaymentRepository paymentRepository, BookingRepository bookingRepository, CustomerInformationRepository customerInformationRepository, UserRepository userRepository) {
         this.paymentRepository = paymentRepository;
         this.bookingRepository = bookingRepository;
         this.customerInformationRepository = customerInformationRepository;
+        this.userRepository = userRepository;
     }
 //    private final BookingRepository bookingRepository;
 //    private final UserRepository userRepository;
@@ -76,4 +79,10 @@ public class DashboardService {
     public Long getTotalCustomers() {
         return customerInformationRepository.countTotalCustomers();
     }
+
+    public Long getTotalAccounts() {
+        return userRepository.countTotalAccounts();
+    }
+
+
 }

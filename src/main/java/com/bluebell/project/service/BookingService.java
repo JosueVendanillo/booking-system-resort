@@ -24,9 +24,12 @@ public class BookingService {
     private final BookingRepository repo;
     private final BookingConfig config;
 
-    public BookingService(BookingRepository repo, BookingConfig config) {
+    private final RoomInventoryService roomInventoryService;
+
+    public BookingService(BookingRepository repo, BookingConfig config, RoomInventoryService roomInventoryService) {
         this.repo = repo;
         this.config = config;
+        this.roomInventoryService = roomInventoryService;
     }
 
 //    private int calculatePrice(String unitType, long noOfDays) {
@@ -134,10 +137,19 @@ public class BookingService {
 
     private void preventOverlap(String unitType, LocalDateTime checkIn, LocalDateTime checkOut, Long excludeId) {
         List<Booking> overlaps = repo.findOverlapping(unitType, checkIn, checkOut, excludeId);
-        if (!overlaps.isEmpty()) {
-            throw new IllegalArgumentException("Booking overlaps with existing booking(s)");
+
+        // How many rooms of this type exist
+        int availableRooms = roomInventoryService.getAvailableRooms(
+                unitType.trim().toLowerCase().replace(" ", "-")
+        );
+
+        if (overlaps.size() >= availableRooms) {
+            throw new IllegalArgumentException(
+                    "No more rooms available for type: " + unitType + " in the selected date range."
+            );
         }
     }
+
 
     private BookingDto toDto(Booking b) {
         BookingDto d = new BookingDto();
@@ -190,5 +202,8 @@ public class BookingService {
     public Long getTotalBookingsThisYear() {
         return repo.countBookingsThisYear();
     }
+
+
+
 
 }

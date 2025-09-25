@@ -34,7 +34,9 @@ public class AuthController {
             Map<String, Object> response = Map.of(
                     "fullName", user.getFullName(),
                     "email", user.getEmail(),
+                    "role", user.getRole().name(),
                     "token", "dummy-token-123" // later replace with real JWT
+
             );
 
             return ResponseEntity.ok(response);
