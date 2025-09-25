@@ -31,10 +31,12 @@ public class AuthService {
 
         // Determine role
         UserRole role;
-        if (request.getRole() != null && request.getRole().equalsIgnoreCase("STAFF")) {
-            role = UserRole.STAFF;
+        if (request.getRole() != null && request.getRole().equalsIgnoreCase("ADMIN")) {
+            role = UserRole.ADMIN;
+        } else if (request.getRole() != null && request.getRole().equalsIgnoreCase("MODERATOR")) {
+            role = UserRole.MODERATOR;
         } else {
-            role = UserRole.ADMIN; // default
+            role = UserRole.CUSTOMER; // default
         }
         User user = new User(request.getFullName(),request.getEmail(), hashed,role);
         userRepository.save(user);

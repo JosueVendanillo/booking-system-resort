@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4173") // React dev server
+//@CrossOrigin(origins = "*")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -34,7 +34,9 @@ public class AuthController {
             Map<String, Object> response = Map.of(
                     "fullName", user.getFullName(),
                     "email", user.getEmail(),
+                    "role", user.getRole().name(),
                     "token", "dummy-token-123" // later replace with real JWT
+
             );
 
             return ResponseEntity.ok(response);
