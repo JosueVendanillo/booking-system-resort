@@ -139,9 +139,15 @@ public class BookingService {
         List<Booking> overlaps = repo.findOverlapping(unitType, checkIn, checkOut, excludeId);
 
         // How many rooms of this type exist
-        int availableRooms = roomInventoryService.getAvailableRooms(
+//        int availableRooms = roomInventoryService.getAvailableRooms(
+//                unitType.trim().toLowerCase().replace(" ", "-")
+//        );
+
+                int availableRooms = roomInventoryService.getTotalRooms(
                 unitType.trim().toLowerCase().replace(" ", "-")
         );
+
+        System.out.println("No. of Available Room(s) is: " + availableRooms + " for " + "unitType: " + unitType);
 
         if (overlaps.size() >= availableRooms) {
             throw new IllegalArgumentException(

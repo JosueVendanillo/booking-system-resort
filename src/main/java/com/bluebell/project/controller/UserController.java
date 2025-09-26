@@ -48,12 +48,26 @@ public class UserController {
 
     // Admin-only: Delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id, @RequestHeader("role") String role) {
-        if (!role.equals("ADMIN")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    public ResponseEntity<String> deleteUser(
+            @PathVariable Long id,
+            @RequestHeader(value = "role", required = false) String role) {
+
+        // Check if requester is ADMIN
+        if (role == null || !role.equalsIgnoreCase("ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Only ADMIN can delete users.");
         }
+
+        // Check if user exists
+        if (!userRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User not found.");
+        }
+
+        // Delete user
         userRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("User deleted successfully.");
     }
+
 }
 

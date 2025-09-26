@@ -39,6 +39,10 @@ public class RoomInventoryService {
         return room.getAvailableRooms();
     }
 
+    public Integer getTotalRooms(String roomType) {
+        return repository.findTotalRoomsByType(roomType);
+    }
+
     @Transactional
     public void decreaseAvailability(String roomType, int amount) {
         RoomInventory room = repository.findByRoomType(roomType)

@@ -11,14 +11,17 @@ public class PaymentDto {
 
     private String status;   // ✅ added status field
 
+    private Double remainingBalance;
+
     // constructor
-    public PaymentDto(Long id, String bookingCode, Double amount, String paymentMethod, LocalDateTime paymentDate, String status) {
+    public PaymentDto(Long id, String bookingCode, Double amount, String paymentMethod, LocalDateTime paymentDate, String status, Double remainingBalance) {
         this.id = id;
         this.bookingCode = bookingCode;
         this.amount = amount;
         this.paymentMethod = paymentMethod;
         this.paymentDate = paymentDate;
         this.status = status;
+        this.remainingBalance = remainingBalance;
     }
 
     // getters
@@ -46,5 +49,9 @@ public class PaymentDto {
 
     public String getStatus() {
         return status;
+    }
+
+    public Double getRemainingBalance() {
+        return remainingBalance;
     }
 }

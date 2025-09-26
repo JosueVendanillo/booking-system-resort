@@ -41,4 +41,14 @@ public class PaymentController {
     public ResponseEntity<List<PaymentDto>> getPaymentsByBookingCode(@PathVariable String bookingCode) {
         return ResponseEntity.ok(paymentService.getPaymentsByBookingCode(bookingCode));
     }
+
+
+    @PostMapping("/complete/{bookingCode}")
+    public ResponseEntity<PaymentDto> completePayment(
+            @PathVariable String bookingCode,
+            @RequestParam String paymentMethod
+    ) {
+        PaymentDto completedPayment = paymentService.completeRemainingPayment(bookingCode, paymentMethod);
+        return ResponseEntity.ok(completedPayment);
+    }
 }
