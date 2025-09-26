@@ -3,6 +3,7 @@ package com.bluebell.project.repository;
 import com.bluebell.project.model.RoomInventory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -19,4 +20,10 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventory, St
             "    SUM(availableRooms) AS availableRooms\n" +
             "FROM RoomInventory")
     Long countAvailableRooms();
+
+    @Query("SELECT r.totalRooms FROM RoomInventory r WHERE r.roomType = :roomType")
+    Integer findTotalRoomsByType(@Param("roomType") String roomType);
+
+    @Query("SELECT r.availableRooms FROM RoomInventory r WHERE r.roomType = :roomType")
+    Integer findAvailableRoomsByType(@Param("roomType") String roomType);
 }

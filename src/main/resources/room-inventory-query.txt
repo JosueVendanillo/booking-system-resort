@@ -1,0 +1,9 @@
+INSERT INTO room_inventory (room_type, total_rooms, available_rooms) VALUES
+('big-cabana', 2, 2),
+('brown-table', 10, 10),
+('couple-room', 7, 7),
+('family-room', 2, 2),
+('garden-table', 3, 3),
+('ktv-room', 2, 2),
+('small-cabana', 7, 7),
+('colored-table', 5, 5);

@@ -27,4 +27,12 @@ public class RoomInventoryController {
         service.updateAvailability(roomType, available);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{roomType}/total")
+    public ResponseEntity<Integer> getTotalRoomsByType(@PathVariable String roomType) {
+        return ResponseEntity.ok(service.getTotalRooms(roomType));
+    }
+
+
+
 }
