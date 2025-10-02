@@ -114,6 +114,93 @@ public class PaymentService {
         return toDto(saved);
     }
 
+    @Transactional
+    public PaymentDto createPaymentFromHomePage(PaymentCreateRequest request) {
+        logger.info(" Creating payment for bookingCode={} with amount={} and method={}",
+                request.getBookingCode(), request.getAmount(), request.getPaymentMethod());
+
+        Booking booking = bookingRepo.findByBookingCode(request.getBookingCode())
+                .orElseThrow(() -> new RuntimeException("Booking not found with code: " + request.getBookingCode()));
+
+
+        double totalAmount = booking.getTotalAmount();
+        double downPaymentRequired = totalAmount * 0.30;
+        System.out.println("TOTAL AMOUNT: " + totalAmount);
+        System.out.println("GET AMOUNT: " + request.getAmount());
+        System.out.println("DOWNPAYMENT: " + downPaymentRequired);
+
+
+        // Fetch existing payments for this booking
+        List<Payment> existingPayments = paymentRepo.findByBooking_Id(booking.getId());
+        double alreadyPaid = existingPayments.stream().mapToDouble(Payment::getAmount).sum();
+        double remainingBalance = totalAmount - alreadyPaid;
+        System.out.println("ALREADY PAID: " + alreadyPaid);
+
+        System.out.println("BALANCE: " + remainingBalance);
+
+        // 🔹 First payment must be exactly 30%
+        if (existingPayments.isEmpty()) {
+            if (Math.abs(request.getAmount() - downPaymentRequired) > 0.01) {
+                logger.warn(" Initial payment validation failed: expected={} but got={}",
+                            downPaymentRequired, request.getAmount());
+                throw new IllegalArgumentException("Initial payment must be exactly 30% of total (" + downPaymentRequired + ")");
+            }
+            booking.setPaymentStatus("PARTIALLY_PAID");
+        } else {
+            // 🔹 Subsequent payments must NOT exceed remaining balance
+            if (request.getAmount() > remainingBalance + 0.01) {
+                logger.warn(" Payment exceeds remaining balance: remaining={} but got={}",
+                        remainingBalance, request.getAmount());
+                throw new IllegalArgumentException("Payment exceeds remaining balance (" + remainingBalance + ")");
+            }
+
+            // Update status depending on new balance
+            if (Math.abs(request.getAmount() - remainingBalance) < 0.01) {
+                booking.setPaymentStatus("PAID");
+            } else {
+                booking.setPaymentStatus("PARTIALLY_PAID");
+            }
+        }
+
+
+        // Create Payment entity
+        Payment payment = new Payment();
+
+        String dpPaymentStatus = "COMPLETED";
+
+        payment.setBooking(booking);
+        payment.setBookingCode(request.getBookingCode());
+        payment.setAmount(request.getAmount());
+        payment.setPaymentMethod(request.getPaymentMethod());
+        payment.setPaymentDate(request.getPaymentDate());
+        payment.setStatus(dpPaymentStatus);
+
+        System.out.println("PAYMENT:=====");
+        System.out.println("BOOKING CODE: " + payment.getBookingCode());
+        System.out.println("AMOUNT: " + payment.getAmount());
+        System.out.println("PAYMENT METHOD: " + payment.getPaymentMethod());
+        System.out.println("PAYMENT DATE: " + payment.getPaymentDate());
+        System.out.println("PAYMENT STATUS: " + payment.getStatus());
+
+        logger.debug(" Saving payment entity: {}", payment);
+
+        // Save payment
+        Payment saved = paymentRepo.save(payment);
+
+        // Deduct room availability only when fully paid
+
+            try {
+                String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
+                roomInventoryService.decreaseAvailability(normalizedRoom, 1);
+                logger.info(" Room availability updated for type={} (decreased by 1)", normalizedRoom);
+            } catch (Exception e) {
+                logger.error(" Failed to update room availability: {}", e.getMessage());
+                throw new RuntimeException("Payment succeeded, but failed to update room availability.");
+            }
+
+        return toDto(saved);
+    }
+
 
     @Transactional
     public PaymentDto completeRemainingPayment(String bookingCode, String paymentMethod) {

@@ -31,7 +31,7 @@ public class BookingCreateRequest {
     @NotNull
     private LocalDateTime checkOut;
 
-//    private Double totalAmount;
+    private Double totalAmount;
 //    private String paymentStatus;
 
     // getters & setters
@@ -60,6 +60,14 @@ public class BookingCreateRequest {
 
     public void setCustomer(CustomerInformationDto customer) {
         this.customer = customer;
+    }
+
+    public Double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Double totalAmount) {
+        this.totalAmount = totalAmount;
     }
 }
 
