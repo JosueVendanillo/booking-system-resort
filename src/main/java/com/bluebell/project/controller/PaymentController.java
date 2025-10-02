@@ -24,6 +24,14 @@ public class PaymentController {
         return ResponseEntity.ok(payment);
     }
 
+    @PostMapping("/payment-home-user")
+    public ResponseEntity<PaymentDto> createPaymentFromHomePage(
+        @RequestBody PaymentCreateRequest request
+    ){
+        PaymentDto payment = paymentService.createPaymentFromHomePage(request);
+        return ResponseEntity.ok(payment);
+    }
+
     // ✅ Get all payments
     @GetMapping
     public ResponseEntity<List<PaymentDto>> getAllPayments() {
@@ -51,4 +59,7 @@ public class PaymentController {
         PaymentDto completedPayment = paymentService.completeRemainingPayment(bookingCode, paymentMethod);
         return ResponseEntity.ok(completedPayment);
     }
+
+
+
 }
