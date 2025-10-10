@@ -1,6 +1,7 @@
 package com.bluebell.project.controller;
 
 import com.bluebell.project.config.BookingConfig;
+import com.bluebell.project.config.EntrancePricesConfig;
 import com.bluebell.project.dto.BookingCreateRequest;
 import com.bluebell.project.dto.BookingDto;
 import com.bluebell.project.dto.BookingUpdateRequest;
@@ -18,9 +19,11 @@ public class BookingController {
 
     private final BookingConfig bookingConfig;
 
+
+
     private final BookingService svc;
 
-    public BookingController(BookingService svc, BookingConfig bookingConfig) {
+    public BookingController(BookingService svc, BookingConfig bookingConfig, EntrancePricesConfig entrancePricesConfig) {
         this.svc = svc;
         this.bookingConfig = bookingConfig;
     }
@@ -67,5 +70,8 @@ public class BookingController {
         if (dto == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(dto);
     }
+
+
+
 
 }

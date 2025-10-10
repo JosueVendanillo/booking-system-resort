@@ -1,6 +1,7 @@
 package com.bluebell.project.service;
 
 import com.bluebell.project.config.BookingConfig;
+import com.bluebell.project.config.EntrancePricesConfig;
 import com.bluebell.project.model.CustomerInformation;
 import com.bluebell.project.repository.BookingRepository;
 import com.bluebell.project.dto.BookingCreateRequest;
@@ -24,11 +25,14 @@ public class BookingService {
     private final BookingRepository repo;
     private final BookingConfig config;
 
+    private final EntrancePricesConfig entrancePricesConfig;
+
     private final RoomInventoryService roomInventoryService;
 
-    public BookingService(BookingRepository repo, BookingConfig config, RoomInventoryService roomInventoryService) {
+    public BookingService(BookingRepository repo, BookingConfig config, EntrancePricesConfig entrancePricesConfig, RoomInventoryService roomInventoryService) {
         this.repo = repo;
         this.config = config;
+        this.entrancePricesConfig = entrancePricesConfig;
         this.roomInventoryService = roomInventoryService;
     }
 
@@ -67,10 +71,20 @@ public class BookingService {
 
         showRequestDateTime(req);
 
+        double kidPrice = req.getKids() * entrancePricesConfig.getKidsPrice();
+        double adultPrice = req.getAdults() * entrancePricesConfig.getAdultPrice();
+
         long noOfDays = Duration.between(req.getCheckIn(), req.getCheckOut()).toDays();
         if (noOfDays == 0) noOfDays = 1; // Ensure same-day bookings count as 1 day
         System.out.println("LENGTH OF DAYS: " + noOfDays);
-        Double totalAmount = (double) calculatePrice(req.getUnitType(), noOfDays);
+        double totalAmount = calculatePrice(req.getUnitType(), noOfDays);
+        double finalTotalAmount = totalAmount + adultPrice + kidPrice;
+
+        System.out.println("Room Price: " + totalAmount);
+        System.out.println("Adult Price: " + adultPrice);
+        System.out.println("Kid(s) Price: " + kidPrice);
+        System.out.println("Final Total Amount: " + finalTotalAmount);
+
 
         Booking b = new Booking();
         CustomerInformation ci = new CustomerInformation();
@@ -84,8 +98,9 @@ public class BookingService {
         b.setCheckOut(req.getCheckOut());
         b.setNoOfDays((int) noOfDays);
 
+
         // Keep totalAmount from frontend for now (can later calculate by pricing rules)
-        b.setTotalAmount(totalAmount);
+        b.setTotalAmount(finalTotalAmount);
         b.setPaymentStatus("PENDING");
         b.setCustomer(ci);
 
@@ -104,9 +119,18 @@ public class BookingService {
         validateDateOrder(req.getCheckIn(), req.getCheckOut());
         preventOverlap(req.getUnitType(), req.getCheckIn(), req.getCheckOut(), id);
 
+        double kidPrice = req.getKids() * entrancePricesConfig.getKidsPrice();
+        double adultPrice = req.getAdults() * entrancePricesConfig.getAdultPrice();
+
         long noOfDays = java.time.Duration.between(req.getCheckIn(), req.getCheckOut()).toDays();
         if(noOfDays == 0) noOfDays = 1;
-        Double totalAmount = (double) calculatePrice(req.getUnitType(), noOfDays);
+        double totalAmount = calculatePrice(req.getUnitType(), noOfDays);
+        double finalTotalAmount = totalAmount + adultPrice + kidPrice;
+
+        System.out.println("Room Price: " + totalAmount);
+        System.out.println("Adult Price: " + adultPrice);
+        System.out.println("Kid(s) Price: " + kidPrice);
+        System.out.println("Final Total Amount: " + finalTotalAmount);
 
         existing.setFullname(req.getFullname());
         existing.setAdults(req.getAdults());
