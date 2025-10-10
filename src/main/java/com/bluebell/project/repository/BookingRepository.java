@@ -37,5 +37,4 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Long countBookingsThisYear();
 
 
-
 }
