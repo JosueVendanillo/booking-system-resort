@@ -83,6 +83,7 @@ public class PaymentService {
         payment.setBooking(booking);
         payment.setAmount(request.getAmount());
         payment.setPaymentMethod(request.getPaymentMethod());
+        payment.setReferenceNumber(request.getReferenceNumber());
         payment.setPaymentDate(request.getPaymentDate());
         payment.setStatus("COMPLETED");
 
@@ -173,6 +174,7 @@ public class PaymentService {
         payment.setAmount(request.getAmount());
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setPaymentDate(request.getPaymentDate());
+        payment.setReferenceNumber(request.getReferenceNumber());
         payment.setStatus(dpPaymentStatus);
 
         System.out.println("PAYMENT:=====");

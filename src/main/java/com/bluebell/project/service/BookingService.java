@@ -8,6 +8,7 @@ import com.bluebell.project.dto.BookingCreateRequest;
 import com.bluebell.project.dto.BookingDto;
 import com.bluebell.project.dto.BookingUpdateRequest;
 import com.bluebell.project.model.Booking;
+import com.bluebell.project.repository.RoomInventoryRepository;
 import com.bluebell.project.util.BookingIdGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +30,14 @@ public class BookingService {
 
     private final RoomInventoryService roomInventoryService;
 
-    public BookingService(BookingRepository repo, BookingConfig config, EntrancePricesConfig entrancePricesConfig, RoomInventoryService roomInventoryService) {
+    private final RoomInventoryRepository roomInventoryRepository;
+
+    public BookingService(BookingRepository repo, BookingConfig config, EntrancePricesConfig entrancePricesConfig, RoomInventoryService roomInventoryService, RoomInventoryRepository roomInventoryRepository) {
         this.repo = repo;
         this.config = config;
         this.entrancePricesConfig = entrancePricesConfig;
         this.roomInventoryService = roomInventoryService;
+        this.roomInventoryRepository = roomInventoryRepository;
     }
 
 //    private int calculatePrice(String unitType, long noOfDays) {
@@ -64,12 +68,36 @@ public class BookingService {
         return repo.findById(id).map(this::toDto).orElse(null);
     }
 
+    private void validateRoomCapacity(BookingCreateRequest request) {
+        String roomType = request.getUnitType();
+        int roomCapacity = roomInventoryRepository.checkRoomCapacity(roomType);
+        int paxCount = request.getAdults() + request.getKids();
+
+        System.out.println("ROOM TYPE: " +  roomType);
+        System.out.println("MAX CAPACITY: " + roomCapacity);
+        System.out.println("PAX COUNT: " + paxCount);
+
+        if (paxCount > roomCapacity) {
+            throw new IllegalArgumentException(
+                    String.format("Room capacity exceeded for type '%s'. Max: %d, Requested: %d",
+                            roomType, roomCapacity, paxCount)
+            );
+        }
+
+        System.out.println("Pax per room validated successfully.");
+    }
+
+
+
+
     @Transactional
     public BookingDto create(BookingCreateRequest req) {
         validateDateOrder(req.getCheckIn(), req.getCheckOut());
         preventOverlap(req.getUnitType(), req.getCheckIn(), req.getCheckOut(), null);
 
         showRequestDateTime(req);
+
+
 
         double kidPrice = req.getKids() * entrancePricesConfig.getKidsPrice();
         double adultPrice = req.getAdults() * entrancePricesConfig.getAdultPrice();
@@ -119,6 +147,7 @@ public class BookingService {
         validateDateOrder(req.getCheckIn(), req.getCheckOut());
         preventOverlap(req.getUnitType(), req.getCheckIn(), req.getCheckOut(), id);
 
+
         double kidPrice = req.getKids() * entrancePricesConfig.getKidsPrice();
         double adultPrice = req.getAdults() * entrancePricesConfig.getAdultPrice();
 
@@ -156,7 +185,7 @@ public class BookingService {
         System.out.println("CHECKOUT VALUE: " + checkOut);
         if (checkIn == null || checkOut == null) throw new IllegalArgumentException("Dates required");
         if (!checkOut.isAfter(checkIn)) throw new IllegalArgumentException("checkOut must be after checkIn");
-        if (checkIn.isBefore(LocalDateTime.now().withSecond(0).withNano(0))) throw new IllegalArgumentException("checkIn cannot be in the past");
+//        if (checkIn.isBefore(LocalDateTime.now().withSecond(0).withNano(0))) throw new IllegalArgumentException("checkIn cannot be in the past");
     }
 
     private void preventOverlap(String unitType, LocalDateTime checkIn, LocalDateTime checkOut, Long excludeId) {
@@ -232,6 +261,19 @@ public class BookingService {
     public Long getTotalBookingsThisYear() {
         return repo.countBookingsThisYear();
     }
+
+
+    public void showAllRoomCapacities() {
+        List<Object[]> result = roomInventoryRepository.findAllRoomTypesAndCapacities();
+
+        for (Object[] row : result) {
+            String roomType = (String) row[0];
+            Integer roomMaxCapacity = (Integer) row[1];
+
+            System.out.println("Room Type: " + roomType + ", Max Capacity: " + roomMaxCapacity);
+        }
+    }
+
 
 
 

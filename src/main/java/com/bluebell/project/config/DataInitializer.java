@@ -11,7 +11,8 @@ public class DataInitializer {
 
     private final RoomInventoryProperties properties;
 
-    public DataInitializer(RoomInventoryProperties properties) {
+    public DataInitializer(
+            RoomInventoryProperties properties) {
         this.properties = properties;
     }
 

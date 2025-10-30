@@ -19,8 +19,6 @@ public class BookingController {
 
     private final BookingConfig bookingConfig;
 
-
-
     private final BookingService svc;
 
     public BookingController(BookingService svc, BookingConfig bookingConfig, EntrancePricesConfig entrancePricesConfig) {
@@ -70,7 +68,6 @@ public class BookingController {
         if (dto == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(dto);
     }
-
 
 
 

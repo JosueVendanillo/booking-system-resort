@@ -50,6 +50,8 @@ public class Booking {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+    @Column(name = "book_status", nullable = false)
+    private String bookStatus = "PENDING";
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RoomInventoryRepository extends JpaRepository<RoomInventory, String> {
@@ -26,4 +27,10 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventory, St
 
     @Query("SELECT r.availableRooms FROM RoomInventory r WHERE r.roomType = :roomType")
     Integer findAvailableRoomsByType(@Param("roomType") String roomType);
+
+    @Query("SELECT r.roomMaxCapacity FROM RoomInventory r WHERE r.roomType = :roomType")
+    Integer checkRoomCapacity(@Param("roomType") String roomType);
+
+    @Query(value = "SELECT room_type, room_max_capacity FROM room_inventory", nativeQuery = true)
+    List<Object[]> findAllRoomTypesAndCapacities();
 }
