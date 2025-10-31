@@ -33,4 +33,8 @@ public interface RoomInventoryRepository extends JpaRepository<RoomInventory, St
 
     @Query(value = "SELECT room_type, room_max_capacity FROM room_inventory", nativeQuery = true)
     List<Object[]> findAllRoomTypesAndCapacities();
+
+
+    @Query(value = "SELECT room_type,total_rooms,available_rooms FROM room_inventory",nativeQuery = true)
+    List<Object[]> getRoomAvailability();
 }

@@ -64,4 +64,6 @@ public class RoomInventoryService {
     public Long getAvailableRooms(){
         return  repository.countAvailableRooms();
     }
+
+
 }

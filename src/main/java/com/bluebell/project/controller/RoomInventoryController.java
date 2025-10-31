@@ -43,4 +43,6 @@ public class RoomInventoryController {
         return repository.findAllRoomTypesAndCapacities();
     }
 
+    @GetMapping("/room-availability")
+    public List<Object[]> getAllRoomAvailabilities(){return  repository.getRoomAvailability();}
 }

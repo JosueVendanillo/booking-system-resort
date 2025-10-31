@@ -274,6 +274,18 @@ public class BookingService {
         }
     }
 
+    public void showAllRoomAvailability() {
+        List<Object[]> result = roomInventoryRepository.getRoomAvailability();
+
+        for (Object[] row : result) {
+            String roomType = (String) row[0];
+            Integer totalRoomCapacity = (Integer) row[1];
+            Integer availableRoomCapacity = (Integer) row[2];
+
+            System.out.println("Room Type: " + roomType + ", Max Room Capacity: " + totalRoomCapacity + ", Available Room Count" + availableRoomCapacity);
+        }
+    }
+
 
 
 

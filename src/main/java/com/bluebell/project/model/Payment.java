@@ -27,7 +27,7 @@ public class Payment {
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
 
-    @Column(name = "reference_number", nullable = false)
+    @Column(name = "reference_number")
     private String referenceNumber;
 
     @Column(name = "created_at", nullable = false, updatable = false)
