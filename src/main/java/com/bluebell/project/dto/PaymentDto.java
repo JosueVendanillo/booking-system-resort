@@ -13,8 +13,10 @@ public class PaymentDto {
 
     private Double remainingBalance;
 
+    private String referenceNumber;
+
     // constructor
-    public PaymentDto(Long id, String bookingCode, Double amount, String paymentMethod, LocalDateTime paymentDate, String status, Double remainingBalance) {
+    public PaymentDto(Long id, String bookingCode, Double amount, String paymentMethod, LocalDateTime paymentDate, String status, Double remainingBalance,String referenceNumber) {
         this.id = id;
         this.bookingCode = bookingCode;
         this.amount = amount;
@@ -22,6 +24,7 @@ public class PaymentDto {
         this.paymentDate = paymentDate;
         this.status = status;
         this.remainingBalance = remainingBalance;
+        this.referenceNumber = referenceNumber;
     }
 
     // getters
@@ -53,5 +56,13 @@ public class PaymentDto {
 
     public Double getRemainingBalance() {
         return remainingBalance;
+    }
+
+    public String getReferenceNumber() {
+        return referenceNumber;
+    }
+
+    public void setReferenceNumber(String referenceNumber) {
+        this.referenceNumber = referenceNumber;
     }
 }

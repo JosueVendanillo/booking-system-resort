@@ -1,6 +1,7 @@
 package com.bluebell.project.controller;
 
 import com.bluebell.project.model.RoomInventory;
+import com.bluebell.project.repository.RoomInventoryRepository;
 import com.bluebell.project.service.RoomInventoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +14,11 @@ public class RoomInventoryController {
 
     private final RoomInventoryService service;
 
-    public RoomInventoryController(RoomInventoryService service) {
+    private final RoomInventoryRepository repository;
+
+    public RoomInventoryController(RoomInventoryService service, RoomInventoryRepository repository) {
         this.service = service;
+        this.repository = repository;
     }
 
     @GetMapping("/inventory")
@@ -34,5 +38,11 @@ public class RoomInventoryController {
     }
 
 
+    @GetMapping("/room-capacities")
+    public List<Object[]> getAllRoomCapacities() {
+        return repository.findAllRoomTypesAndCapacities();
+    }
 
+    @GetMapping("/room-availability")
+    public List<Object[]> getAllRoomAvailabilities(){return  repository.getRoomAvailability();}
 }

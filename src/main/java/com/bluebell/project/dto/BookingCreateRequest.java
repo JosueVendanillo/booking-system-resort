@@ -13,6 +13,7 @@ public class BookingCreateRequest {
     @NotNull
     private CustomerInformationDto customer;
 
+    private String bookingCode;
     @NotBlank
     private String fullname;
 
@@ -33,8 +34,19 @@ public class BookingCreateRequest {
 
     private Double totalAmount;
 //    private String paymentStatus;
+    private String bookStatus;
 
     // getters & setters
+
+
+    public String getBookingCode() {
+        return bookingCode;
+    }
+
+    public void setBookingCode(String bookingCode) {
+        this.bookingCode = bookingCode;
+    }
+
     public String getFullname() { return fullname; }
     public void setFullname(String fullname) { this.fullname = fullname; }
 
@@ -68,6 +80,14 @@ public class BookingCreateRequest {
 
     public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public String getBookStatus() {
+        return bookStatus;
+    }
+
+    public void setBookStatus(String bookStatus) {
+        this.bookStatus = bookStatus;
     }
 }
 

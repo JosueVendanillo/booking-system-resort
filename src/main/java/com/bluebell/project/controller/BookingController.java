@@ -19,8 +19,6 @@ public class BookingController {
 
     private final BookingConfig bookingConfig;
 
-
-
     private final BookingService svc;
 
     public BookingController(BookingService svc, BookingConfig bookingConfig, EntrancePricesConfig entrancePricesConfig) {
@@ -69,6 +67,24 @@ public class BookingController {
         BookingDto dto = svc.getByCode(bookingCode);
         if (dto == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(dto);
+    }
+
+    // ✅ Manual Check-in
+    @PutMapping("/checkin")
+    public BookingDto manualCheckin(@RequestBody BookingCreateRequest request) {
+        return svc.manualCheckin(request);
+    }
+
+    // ✅ Manual Check-out
+    @PutMapping("/checkout")
+    public BookingDto manualCheckOut(@RequestBody BookingCreateRequest request) {
+        return svc.manualCheckOut(request);
+    }
+
+    // ✅ Cancel Booking
+    @PutMapping("/cancel")
+    public BookingDto cancelBooking(@RequestBody BookingCreateRequest request) {
+        return svc.cancelBooking(request);
     }
 
 

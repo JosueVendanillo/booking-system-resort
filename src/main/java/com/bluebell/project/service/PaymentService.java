@@ -83,6 +83,7 @@ public class PaymentService {
         payment.setBooking(booking);
         payment.setAmount(request.getAmount());
         payment.setPaymentMethod(request.getPaymentMethod());
+        payment.setReferenceNumber(request.getReferenceNumber());
         payment.setPaymentDate(request.getPaymentDate());
         payment.setStatus("COMPLETED");
 
@@ -99,17 +100,17 @@ public class PaymentService {
         logger.info(" Booking id={} updated to paymentStatus={} (after payment of {})",
                 booking.getId(), booking.getPaymentStatus(), request.getAmount());
 
-        // Deduct room availability only when fully paid
-        if ("PAID".equalsIgnoreCase(booking.getPaymentStatus())) {
-            try {
-                String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
-                roomInventoryService.decreaseAvailability(normalizedRoom, 1);
-                logger.info(" Room availability updated for type={} (decreased by 1)", normalizedRoom);
-            } catch (Exception e) {
-                logger.error(" Failed to update room availability: {}", e.getMessage());
-                throw new RuntimeException("Payment succeeded, but failed to update room availability.");
-            }
-        }
+//        // Deduct room availability only when fully paid
+//        if ("PAID".equalsIgnoreCase(booking.getPaymentStatus())) {
+//            try {
+//                String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
+////                roomInventoryService.decreaseAvailability(normalizedRoom, 1);
+//                logger.info(" Room availability updated for type={} (decreased by 1)", normalizedRoom);
+//            } catch (Exception e) {
+//                logger.error(" Failed to update room availability: {}", e.getMessage());
+//                throw new RuntimeException("Payment succeeded, but failed to update room availability.");
+//            }
+//        }
 
         return toDto(saved);
     }
@@ -173,6 +174,7 @@ public class PaymentService {
         payment.setAmount(request.getAmount());
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setPaymentDate(request.getPaymentDate());
+        payment.setReferenceNumber(request.getReferenceNumber());
         payment.setStatus(dpPaymentStatus);
 
         System.out.println("PAYMENT:=====");
@@ -187,23 +189,23 @@ public class PaymentService {
         // Save payment
         Payment saved = paymentRepo.save(payment);
 
-        // Deduct room availability only when fully paid
-
-            try {
-                String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
-                roomInventoryService.decreaseAvailability(normalizedRoom, 1);
-                logger.info(" Room availability updated for type={} (decreased by 1)", normalizedRoom);
-            } catch (Exception e) {
-                logger.error(" Failed to update room availability: {}", e.getMessage());
-                throw new RuntimeException("Payment succeeded, but failed to update room availability.");
-            }
+//        // Deduct room availability only when fully paid
+//
+//            try {
+//                String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
+//                roomInventoryService.decreaseAvailability(normalizedRoom, 1);
+//                logger.info(" Room availability updated for type={} (decreased by 1)", normalizedRoom);
+//            } catch (Exception e) {
+//                logger.error(" Failed to update room availability: {}", e.getMessage());
+//                throw new RuntimeException("Payment succeeded, but failed to update room availability.");
+//            }
 
         return toDto(saved);
     }
 
 
     @Transactional
-    public PaymentDto completeRemainingPayment(String bookingCode, String paymentMethod) {
+    public PaymentDto completeRemainingPayment(String bookingCode, String paymentMethod,String referenceNumber) {
         Booking booking = bookingRepo.findByBookingCode(bookingCode)
                 .orElseThrow(() -> new RuntimeException("Booking not found: " + bookingCode));
 
@@ -221,6 +223,7 @@ public class PaymentService {
         payment.setAmount(remainingBalance);
         payment.setPaymentMethod(paymentMethod);
         payment.setPaymentDate(java.time.LocalDateTime.now());
+        payment.setReferenceNumber(referenceNumber);
         payment.setStatus("COMPLETED");
 
         Payment saved = paymentRepo.save(payment);
@@ -233,6 +236,7 @@ public class PaymentService {
         try {
             String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
             roomInventoryService.decreaseAvailability(normalizedRoom, 1);
+            System.out.println("ROOM COUNT DEDUCTED.");
         } catch (Exception e) {
             throw new RuntimeException("Payment succeeded, but failed to update room availability.");
         }
@@ -245,7 +249,8 @@ public class PaymentService {
                 saved.getPaymentMethod(),
                 saved.getPaymentDate(),
                 saved.getStatus(),
-                updatedRemainingBalance
+                updatedRemainingBalance,
+                saved.getReferenceNumber()
         );
     }
 
@@ -298,7 +303,9 @@ public class PaymentService {
                 payment.getPaymentMethod(),
                 payment.getPaymentDate(),
                 payment.getStatus(),
-                remainingBalance);
+                remainingBalance,
+                payment.getReferenceNumber()
+                );
     }
 
 
@@ -306,25 +313,4 @@ public class PaymentService {
         return paymentRepo.countTotalBills();
     }
 
-
-//
-//    @Transactional
-//    public void confirmBookingPayment(Long bookingId) {
-//        Booking booking = bookingRepo.findById(bookingId)
-//                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
-//
-//        if (!"PAID".equalsIgnoreCase(booking.getPaymentStatus())) {
-//            booking.setPaymentStatus("PAID");
-//            bookingRepo.save(booking);
-//
-//            // Update room availability
-//            String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
-//            int currentAvailable = roomInventoryService.getAvailableRooms(normalizedRoom);
-//            if (currentAvailable > 0) {
-//                roomInventoryService.updateAvailability(normalizedRoom, currentAvailable - 1);
-//            } else {
-//                throw new IllegalStateException("No more rooms available for type: " + booking.getUnitType());
-//            }
-//        }
-//    }
 }

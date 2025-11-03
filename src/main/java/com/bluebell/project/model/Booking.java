@@ -50,6 +50,8 @@ public class Booking {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+    @Column(name = "book_status", nullable = false)
+    private String bookStatus = "PENDING";
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
@@ -129,5 +131,13 @@ public class Booking {
 
     public void setPayments(List<Payment> payments) {
         this.payments = payments;
+    }
+
+    public String getBookStatus() {
+        return bookStatus;
+    }
+
+    public void setBookStatus(String bookStatus) {
+        this.bookStatus = bookStatus;
     }
 }

@@ -8,6 +8,7 @@ import com.bluebell.project.dto.BookingCreateRequest;
 import com.bluebell.project.dto.BookingDto;
 import com.bluebell.project.dto.BookingUpdateRequest;
 import com.bluebell.project.model.Booking;
+import com.bluebell.project.repository.RoomInventoryRepository;
 import com.bluebell.project.util.BookingIdGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +30,14 @@ public class BookingService {
 
     private final RoomInventoryService roomInventoryService;
 
-    public BookingService(BookingRepository repo, BookingConfig config, EntrancePricesConfig entrancePricesConfig, RoomInventoryService roomInventoryService) {
+    private final RoomInventoryRepository roomInventoryRepository;
+
+    public BookingService(BookingRepository repo, BookingConfig config, EntrancePricesConfig entrancePricesConfig, RoomInventoryService roomInventoryService, RoomInventoryRepository roomInventoryRepository) {
         this.repo = repo;
         this.config = config;
         this.entrancePricesConfig = entrancePricesConfig;
         this.roomInventoryService = roomInventoryService;
+        this.roomInventoryRepository = roomInventoryRepository;
     }
 
 //    private int calculatePrice(String unitType, long noOfDays) {
@@ -64,12 +68,35 @@ public class BookingService {
         return repo.findById(id).map(this::toDto).orElse(null);
     }
 
+    private void validateRoomCapacity(BookingCreateRequest request) {
+        String roomType = request.getUnitType();
+        int roomCapacity = roomInventoryRepository.checkRoomCapacity(roomType);
+        int paxCount = request.getAdults() + request.getKids();
+
+        System.out.println("ROOM TYPE: " +  roomType);
+        System.out.println("MAX CAPACITY: " + roomCapacity);
+        System.out.println("PAX COUNT: " + paxCount);
+
+        if (paxCount > roomCapacity) {
+            throw new IllegalArgumentException(
+                    String.format("Room capacity exceeded for type '%s'. Max: %d, Requested: %d",
+                            roomType, roomCapacity, paxCount)
+            );
+        }
+
+        System.out.println("Pax per room validated successfully.");
+    }
+
+
+
+
     @Transactional
     public BookingDto create(BookingCreateRequest req) {
         validateDateOrder(req.getCheckIn(), req.getCheckOut());
         preventOverlap(req.getUnitType(), req.getCheckIn(), req.getCheckOut(), null);
 
         showRequestDateTime(req);
+
 
         double kidPrice = req.getKids() * entrancePricesConfig.getKidsPrice();
         double adultPrice = req.getAdults() * entrancePricesConfig.getAdultPrice();
@@ -97,7 +124,7 @@ public class BookingService {
         b.setCheckIn(req.getCheckIn());
         b.setCheckOut(req.getCheckOut());
         b.setNoOfDays((int) noOfDays);
-
+        b.setBookStatus("PENDING");
 
         // Keep totalAmount from frontend for now (can later calculate by pricing rules)
         b.setTotalAmount(finalTotalAmount);
@@ -118,6 +145,7 @@ public class BookingService {
         Booking existing = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Booking not found"));
         validateDateOrder(req.getCheckIn(), req.getCheckOut());
         preventOverlap(req.getUnitType(), req.getCheckIn(), req.getCheckOut(), id);
+
 
         double kidPrice = req.getKids() * entrancePricesConfig.getKidsPrice();
         double adultPrice = req.getAdults() * entrancePricesConfig.getAdultPrice();
@@ -156,7 +184,7 @@ public class BookingService {
         System.out.println("CHECKOUT VALUE: " + checkOut);
         if (checkIn == null || checkOut == null) throw new IllegalArgumentException("Dates required");
         if (!checkOut.isAfter(checkIn)) throw new IllegalArgumentException("checkOut must be after checkIn");
-        if (checkIn.isBefore(LocalDateTime.now().withSecond(0).withNano(0))) throw new IllegalArgumentException("checkIn cannot be in the past");
+//        if (checkIn.isBefore(LocalDateTime.now().withSecond(0).withNano(0))) throw new IllegalArgumentException("checkIn cannot be in the past");
     }
 
     private void preventOverlap(String unitType, LocalDateTime checkIn, LocalDateTime checkOut, Long excludeId) {
@@ -194,6 +222,7 @@ public class BookingService {
         d.setNoOfDays(b.getNoOfDays());
         d.setTotalAmount(b.getTotalAmount());
         d.setPaymentStatus(b.getPaymentStatus());
+        d.setBookStatus(b.getBookStatus());
         return d;
     }
 
@@ -216,6 +245,7 @@ public class BookingService {
         System.out.println("Unit Type    : " + request.getUnitType());
         System.out.println("Check In     : " + request.getCheckIn());
         System.out.println("Check Out    : " + request.getCheckOut());
+        System.out.println("Book Status: " + request.getBookStatus());
 
         if (request.getCustomer() != null) {
             System.out.println("Customer Name: " + request.getCustomer().getFullname());
@@ -234,6 +264,84 @@ public class BookingService {
     }
 
 
+    public void showAllRoomCapacities() {
+        List<Object[]> result = roomInventoryRepository.findAllRoomTypesAndCapacities();
 
+        for (Object[] row : result) {
+            String roomType = (String) row[0];
+            Integer roomMaxCapacity = (Integer) row[1];
+
+            System.out.println("Room Type: " + roomType + ", Max Capacity: " + roomMaxCapacity);
+        }
+    }
+
+    public void showAllRoomAvailability() {
+        List<Object[]> result = roomInventoryRepository.getRoomAvailability();
+
+        for (Object[] row : result) {
+            String roomType = (String) row[0];
+            Integer totalRoomCapacity = (Integer) row[1];
+            Integer availableRoomCapacity = (Integer) row[2];
+
+            System.out.println("Room Type: " + roomType + ", Max Room Capacity: " + totalRoomCapacity + ", Available Room Count" + availableRoomCapacity);
+        }
+    }
+
+
+    // ✅ Convenience methods for clarity and cleaner API calls
+    public BookingDto manualCheckin(BookingCreateRequest request) {
+        return updateBookingStatus(request, "CHECKED-IN");
+    }
+
+    public BookingDto manualCheckOut(BookingCreateRequest request) {
+        return updateBookingStatus(request, "CHECKED-OUT");
+    }
+
+    public BookingDto cancelBooking(BookingCreateRequest request) {
+        return updateBookingStatus(request, "CANCELED");
+    }
+
+    // 🔹 Centralized logic for updating booking status
+    private BookingDto updateBookingStatus(BookingCreateRequest request, String status) {
+
+        // 🧩 Find the existing booking by booking code
+        Booking booking = repo.findByBookingCode(request.getBookingCode())
+                .orElseThrow(() -> new RuntimeException("Booking not found with code: " + request.getBookingCode()));
+
+        switch (status) {
+            case "CHECKED-IN":
+                System.out.println("CHECK-IN TIME: " + request.getCheckIn());
+                booking.setCheckIn(request.getCheckIn());
+                break;
+
+            case "CHECKED-OUT":
+                System.out.println("CHECK-OUT TIME: " + request.getCheckOut());
+                booking.setCheckOut(request.getCheckOut());
+                break;
+
+            case "CANCELED":
+                System.out.println("BOOKING CANCELED: " + request.getBookStatus());
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid booking status: " + status);
+        }
+
+        // ✅ Update status and save
+        booking.setBookStatus(status);
+        Booking saved = repo.save(booking);
+
+        return toDto2(saved);
+    }
+
+    // ✅ Convert Entity → DTO
+    private BookingDto toDto2(Booking booking) {
+        BookingDto dto = new BookingDto();
+        dto.setBookingCode(booking.getBookingCode());
+        dto.setCheckIn(booking.getCheckIn());
+        dto.setCheckOut(booking.getCheckOut());
+        dto.setBookStatus(booking.getBookStatus());
+        return dto;
+    }
 
 }

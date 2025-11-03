@@ -54,9 +54,16 @@ public class PaymentController {
     @PostMapping("/complete/{bookingCode}")
     public ResponseEntity<PaymentDto> completePayment(
             @PathVariable String bookingCode,
-            @RequestParam String paymentMethod
+            @RequestParam String paymentMethod,
+            @RequestParam(required = false) String referenceNumber
     ) {
-        PaymentDto completedPayment = paymentService.completeRemainingPayment(bookingCode, paymentMethod);
+
+        System.out.println("CONTROLLER LOGS: ");
+        System.out.println("BOOKING CODE: " + bookingCode);
+        System.out.println("PAYMENT METHOD: "  + paymentMethod);
+        System.out.println("REFERENCE NUMBER: " + referenceNumber);
+
+        PaymentDto completedPayment = paymentService.completeRemainingPayment(bookingCode, paymentMethod,referenceNumber);
         return ResponseEntity.ok(completedPayment);
     }
 
