@@ -98,7 +98,6 @@ public class BookingService {
         showRequestDateTime(req);
 
 
-
         double kidPrice = req.getKids() * entrancePricesConfig.getKidsPrice();
         double adultPrice = req.getAdults() * entrancePricesConfig.getAdultPrice();
 
@@ -125,7 +124,7 @@ public class BookingService {
         b.setCheckIn(req.getCheckIn());
         b.setCheckOut(req.getCheckOut());
         b.setNoOfDays((int) noOfDays);
-
+        b.setBookStatus("PENDING");
 
         // Keep totalAmount from frontend for now (can later calculate by pricing rules)
         b.setTotalAmount(finalTotalAmount);
@@ -223,6 +222,7 @@ public class BookingService {
         d.setNoOfDays(b.getNoOfDays());
         d.setTotalAmount(b.getTotalAmount());
         d.setPaymentStatus(b.getPaymentStatus());
+        d.setBookStatus(b.getBookStatus());
         return d;
     }
 
@@ -245,6 +245,7 @@ public class BookingService {
         System.out.println("Unit Type    : " + request.getUnitType());
         System.out.println("Check In     : " + request.getCheckIn());
         System.out.println("Check Out    : " + request.getCheckOut());
+        System.out.println("Book Status: " + request.getBookStatus());
 
         if (request.getCustomer() != null) {
             System.out.println("Customer Name: " + request.getCustomer().getFullname());
@@ -287,7 +288,60 @@ public class BookingService {
     }
 
 
+    // ✅ Convenience methods for clarity and cleaner API calls
+    public BookingDto manualCheckin(BookingCreateRequest request) {
+        return updateBookingStatus(request, "CHECKED-IN");
+    }
 
+    public BookingDto manualCheckOut(BookingCreateRequest request) {
+        return updateBookingStatus(request, "CHECKED-OUT");
+    }
 
+    public BookingDto cancelBooking(BookingCreateRequest request) {
+        return updateBookingStatus(request, "CANCELED");
+    }
+
+    // 🔹 Centralized logic for updating booking status
+    private BookingDto updateBookingStatus(BookingCreateRequest request, String status) {
+
+        // 🧩 Find the existing booking by booking code
+        Booking booking = repo.findByBookingCode(request.getBookingCode())
+                .orElseThrow(() -> new RuntimeException("Booking not found with code: " + request.getBookingCode()));
+
+        switch (status) {
+            case "CHECKED-IN":
+                System.out.println("CHECK-IN TIME: " + request.getCheckIn());
+                booking.setCheckIn(request.getCheckIn());
+                break;
+
+            case "CHECKED-OUT":
+                System.out.println("CHECK-OUT TIME: " + request.getCheckOut());
+                booking.setCheckOut(request.getCheckOut());
+                break;
+
+            case "CANCELED":
+                System.out.println("BOOKING CANCELED: " + request.getBookStatus());
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid booking status: " + status);
+        }
+
+        // ✅ Update status and save
+        booking.setBookStatus(status);
+        Booking saved = repo.save(booking);
+
+        return toDto2(saved);
+    }
+
+    // ✅ Convert Entity → DTO
+    private BookingDto toDto2(Booking booking) {
+        BookingDto dto = new BookingDto();
+        dto.setBookingCode(booking.getBookingCode());
+        dto.setCheckIn(booking.getCheckIn());
+        dto.setCheckOut(booking.getCheckOut());
+        dto.setBookStatus(booking.getBookStatus());
+        return dto;
+    }
 
 }

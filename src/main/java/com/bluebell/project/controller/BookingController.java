@@ -69,6 +69,24 @@ public class BookingController {
         return ResponseEntity.ok(dto);
     }
 
+    // ✅ Manual Check-in
+    @PutMapping("/checkin")
+    public BookingDto manualCheckin(@RequestBody BookingCreateRequest request) {
+        return svc.manualCheckin(request);
+    }
+
+    // ✅ Manual Check-out
+    @PutMapping("/checkout")
+    public BookingDto manualCheckOut(@RequestBody BookingCreateRequest request) {
+        return svc.manualCheckOut(request);
+    }
+
+    // ✅ Cancel Booking
+    @PutMapping("/cancel")
+    public BookingDto cancelBooking(@RequestBody BookingCreateRequest request) {
+        return svc.cancelBooking(request);
+    }
+
 
 
 

@@ -22,6 +22,8 @@ public class BookingDto {
     private Double totalAmount;
     private String paymentStatus;
 
+    private String bookStatus;
+
 
     // getters & setters
     public Long getId() { return id; }
@@ -61,4 +63,12 @@ public class BookingDto {
 
     public String getPaymentStatus() { return paymentStatus; }
     public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
+
+    public String getBookStatus() {
+        return bookStatus;
+    }
+
+    public void setBookStatus(String bookStatus) {
+        this.bookStatus = bookStatus;
+    }
 }

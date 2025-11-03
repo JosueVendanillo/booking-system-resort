@@ -132,4 +132,12 @@ public class Booking {
     public void setPayments(List<Payment> payments) {
         this.payments = payments;
     }
+
+    public String getBookStatus() {
+        return bookStatus;
+    }
+
+    public void setBookStatus(String bookStatus) {
+        this.bookStatus = bookStatus;
+    }
 }
