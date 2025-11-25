@@ -167,7 +167,7 @@ public class BookingService {
         existing.setCheckIn(req.getCheckIn());
         existing.setCheckOut(req.getCheckOut());
         existing.setNoOfDays((int) noOfDays);
-        existing.setTotalAmount(totalAmount);
+        existing.setTotalAmount(finalTotalAmount);
 
         Booking saved = repo.save(existing);
         return toDto(saved);
