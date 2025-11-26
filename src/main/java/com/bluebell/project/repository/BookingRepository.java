@@ -1,5 +1,7 @@
 package com.bluebell.project.repository;
 
+import com.bluebell.project.dto.BookingDto;
+import com.bluebell.project.dto.BookingSummaryDto;
 import com.bluebell.project.model.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -35,6 +37,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT COUNT(b) FROM Booking b WHERE YEAR(b.createdAt) = YEAR(CURRENT_DATE)")
     Long countBookingsThisYear();
+
+    @Query("SELECT new com.bluebell.project.dto.BookingSummaryDto(" +
+            "b.id, b.bookingCode, b.fullname, b.unitType, " +
+            "b.checkIn, b.checkOut, b.adults, b.kids, b.noOfDays, b.totalAmount, " +
+            "b.paymentStatus, b.bookStatus, b.createdAt, b.customer.id) " +
+            "FROM Booking b WHERE b.fullname = :name")
+    List<BookingSummaryDto> findBookingSummaryByFullName(@Param("name") String name);
+
 
 
 }

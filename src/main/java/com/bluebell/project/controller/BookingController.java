@@ -4,7 +4,10 @@ import com.bluebell.project.config.BookingConfig;
 import com.bluebell.project.config.EntrancePricesConfig;
 import com.bluebell.project.dto.BookingCreateRequest;
 import com.bluebell.project.dto.BookingDto;
+import com.bluebell.project.dto.BookingSummaryDto;
 import com.bluebell.project.dto.BookingUpdateRequest;
+import com.bluebell.project.model.Booking;
+import com.bluebell.project.repository.BookingRepository;
 import com.bluebell.project.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +24,12 @@ public class BookingController {
 
     private final BookingService svc;
 
-    public BookingController(BookingService svc, BookingConfig bookingConfig, EntrancePricesConfig entrancePricesConfig) {
+    private final BookingRepository bookingRepository;
+
+    public BookingController(BookingService svc, BookingConfig bookingConfig, EntrancePricesConfig entrancePricesConfig, BookingRepository bookingRepository) {
         this.svc = svc;
         this.bookingConfig = bookingConfig;
+        this.bookingRepository = bookingRepository;
     }
 
     @GetMapping
@@ -86,6 +92,20 @@ public class BookingController {
     public BookingDto cancelBooking(@RequestBody BookingCreateRequest request) {
         return svc.cancelBooking(request);
     }
+
+    // Fetch bookings by full name using query parameter
+    // GET /api/bookings/by-name?name=John Doe
+    @GetMapping("/by-name")
+    public ResponseEntity<List<BookingSummaryDto>> getBookingsByName(@RequestParam String name) {
+        List<BookingSummaryDto> bookings = svc.getBookingSummaryByFullName(name);
+
+        if (bookings.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(bookings);
+    }
+
 
 
 

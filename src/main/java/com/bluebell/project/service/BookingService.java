@@ -2,6 +2,7 @@ package com.bluebell.project.service;
 
 import com.bluebell.project.config.BookingConfig;
 import com.bluebell.project.config.EntrancePricesConfig;
+import com.bluebell.project.dto.BookingSummaryDto;
 import com.bluebell.project.model.CustomerInformation;
 import com.bluebell.project.repository.BookingRepository;
 import com.bluebell.project.dto.BookingCreateRequest;
@@ -135,6 +136,7 @@ public class BookingService {
         ci.setEmail(req.getCustomer().getEmail());
         ci.setContactNumber(req.getCustomer().getContactNumber());
         ci.setGender(req.getCustomer().getGender());
+        ci.setCreatedBy(req.getCustomer().getCreatedBy());
 
         Booking saved = repo.save(b);
         return toDto(saved);
@@ -342,6 +344,11 @@ public class BookingService {
         dto.setCheckOut(booking.getCheckOut());
         dto.setBookStatus(booking.getBookStatus());
         return dto;
+    }
+
+
+    public List<BookingSummaryDto> getBookingSummaryByFullName(String fullName) {
+        return repo.findBookingSummaryByFullName(fullName);
     }
 
 }
