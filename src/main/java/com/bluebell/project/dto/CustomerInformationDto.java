@@ -9,6 +9,8 @@ public class CustomerInformationDto {
 
     private String gender;
 
+    private String createdBy;
+
     public CustomerInformationDto() {}
 
     public CustomerInformationDto(Long id, String fullname, String email, String contactNumber) {
@@ -37,5 +39,13 @@ public class CustomerInformationDto {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }

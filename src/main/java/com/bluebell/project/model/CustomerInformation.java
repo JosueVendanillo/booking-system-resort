@@ -20,6 +20,8 @@ public class CustomerInformation {
     // @OneToOne(mappedBy = "customerInformation")
     // private Booking booking;
 
+    private String createdBy;
+
     public CustomerInformation() {}
 
     public CustomerInformation(String fullname, String email, String contactNumber) {
@@ -47,5 +49,13 @@ public class CustomerInformation {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }

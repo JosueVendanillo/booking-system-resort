@@ -64,4 +64,17 @@ public class CustomerController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+
+    // Fetch fullnames by createdBy
+    @GetMapping("/full-name/{createdBy}")
+    public ResponseEntity<List<String>> findFullNames(@PathVariable String createdBy) {
+        List<String> fullnames = customerRepository.findFullNamesByCreatedBy(createdBy);
+
+        if (fullnames.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(fullnames);
+    }
 }

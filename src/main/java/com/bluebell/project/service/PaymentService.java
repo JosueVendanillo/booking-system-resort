@@ -100,17 +100,17 @@ public class PaymentService {
         logger.info(" Booking id={} updated to paymentStatus={} (after payment of {})",
                 booking.getId(), booking.getPaymentStatus(), request.getAmount());
 
-//        // Deduct room availability only when fully paid
-//        if ("PAID".equalsIgnoreCase(booking.getPaymentStatus())) {
-//            try {
-//                String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
-////                roomInventoryService.decreaseAvailability(normalizedRoom, 1);
-//                logger.info(" Room availability updated for type={} (decreased by 1)", normalizedRoom);
-//            } catch (Exception e) {
-//                logger.error(" Failed to update room availability: {}", e.getMessage());
-//                throw new RuntimeException("Payment succeeded, but failed to update room availability.");
-//            }
-//        }
+        // Deduct room availability only when fully paid
+        if ("PAID".equalsIgnoreCase(booking.getPaymentStatus())) {
+            try {
+                String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
+//                roomInventoryService.decreaseAvailability(normalizedRoom, 1);
+                logger.info(" Room availability updated for type={} (decreased by 1)", normalizedRoom);
+            } catch (Exception e) {
+                logger.error(" Failed to update room availability: {}", e.getMessage());
+                throw new RuntimeException("Payment succeeded, but failed to update room availability.");
+            }
+        }
 
         return toDto(saved);
     }
@@ -189,16 +189,16 @@ public class PaymentService {
         // Save payment
         Payment saved = paymentRepo.save(payment);
 
-//        // Deduct room availability only when fully paid
-//
-//            try {
-//                String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
-//                roomInventoryService.decreaseAvailability(normalizedRoom, 1);
-//                logger.info(" Room availability updated for type={} (decreased by 1)", normalizedRoom);
-//            } catch (Exception e) {
-//                logger.error(" Failed to update room availability: {}", e.getMessage());
-//                throw new RuntimeException("Payment succeeded, but failed to update room availability.");
-//            }
+        // Deduct room availability only when fully paid
+
+            try {
+                String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
+                roomInventoryService.decreaseAvailability(normalizedRoom, 1);
+                logger.info(" Room availability updated for type={} (decreased by 1)", normalizedRoom);
+            } catch (Exception e) {
+                logger.error(" Failed to update room availability: {}", e.getMessage());
+                throw new RuntimeException("Payment succeeded, but failed to update room availability.");
+            }
 
         return toDto(saved);
     }
@@ -232,14 +232,14 @@ public class PaymentService {
         booking.setPaymentStatus("PAID");
         bookingRepo.save(booking);
 
-        // Deduct room availability
-        try {
-            String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
-            roomInventoryService.decreaseAvailability(normalizedRoom, 1);
-            System.out.println("ROOM COUNT DEDUCTED.");
-        } catch (Exception e) {
-            throw new RuntimeException("Payment succeeded, but failed to update room availability.");
-        }
+//        // Deduct room availability
+//        try {
+//            String normalizedRoom = booking.getUnitType().trim().toLowerCase().replace(" ", "-");
+//            roomInventoryService.decreaseAvailability(normalizedRoom, 1);
+//            System.out.println("ROOM COUNT DEDUCTED.");
+//        } catch (Exception e) {
+//            throw new RuntimeException("Payment succeeded, but failed to update room availability.");
+//        }
         double updatedRemainingBalance = 0.0;
 
         return new PaymentDto(
