@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/feedback")
+@RequestMapping("/api/feedbacks")
 //@CrossOrigin(origins = "http://localhost:3000") // Allow frontend connection
 public class FeedbackController {
 
