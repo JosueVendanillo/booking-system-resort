@@ -35,6 +35,10 @@ public class AuthService {
             role = UserRole.ADMIN;
         } else if (request.getRole() != null && request.getRole().equalsIgnoreCase("MODERATOR")) {
             role = UserRole.MODERATOR;
+        } else if (request.getRole() != null && request.getRole().equalsIgnoreCase("RECEPTIONIST")) {
+            role = UserRole.RECEPTIONIST;
+        } else if (request.getRole() != null && request.getRole().equalsIgnoreCase("STAFF")){
+            role = UserRole.RECEPTIONIST;
         } else {
             role = UserRole.CUSTOMER; // default
         }
