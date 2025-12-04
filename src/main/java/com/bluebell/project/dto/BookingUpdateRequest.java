@@ -30,6 +30,11 @@ public class BookingUpdateRequest {
 //    private Double totalAmount;
 //    private String paymentStatus;
 
+
+    private String addOns;
+
+    private String leisureTime;
+
     // getters & setters
     // (same as create request)
     public String getFullname() { return fullname; }
@@ -45,4 +50,19 @@ public class BookingUpdateRequest {
     public LocalDateTime getCheckOut() { return checkOut; }
     public void setCheckOut(LocalDateTime checkOut) { this.checkOut = checkOut; }
 
+    public String getAddOns() {
+        return addOns;
+    }
+
+    public void setAddOns(String addOns) {
+        this.addOns = addOns;
+    }
+
+    public String getLeisureTime() {
+        return leisureTime;
+    }
+
+    public void setLeisureTime(String leisureTime) {
+        this.leisureTime = leisureTime;
+    }
 }
