@@ -7,11 +7,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
+
+
+    // Find all bookings by unitType
+    List<Booking> findByUnitType(String unitType);
 
     // Find bookings for the same unit that overlap with a given range
     @Query("""
@@ -46,5 +51,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<BookingSummaryDto> findBookingSummaryByFullName(@Param("name") String name);
 
 
+
+
+    @Query("SELECT COUNT(b) > 0 FROM Booking b WHERE :selectedDate BETWEEN b.checkIn AND b.checkOut")
+            boolean existsByDateBooked(@Param("selectedDate") LocalDate selectedDate);
 
 }
