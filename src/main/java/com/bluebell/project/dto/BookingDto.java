@@ -24,6 +24,10 @@ public class BookingDto {
 
     private String bookStatus;
 
+    private String leisureTime;
+
+    private String addOns;
+
 
     // getters & setters
     public Long getId() { return id; }
@@ -70,5 +74,21 @@ public class BookingDto {
 
     public void setBookStatus(String bookStatus) {
         this.bookStatus = bookStatus;
+    }
+
+    public String getLeisureTime() {
+        return leisureTime;
+    }
+
+    public void setLeisureTime(String leisureTime) {
+        this.leisureTime = leisureTime;
+    }
+
+    public String getAddOns() {
+        return addOns;
+    }
+
+    public void setAddOns(String addOns) {
+        this.addOns = addOns;
     }
 }
