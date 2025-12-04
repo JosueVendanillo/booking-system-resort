@@ -2,16 +2,15 @@ package com.bluebell.project.controller;
 
 import com.bluebell.project.config.BookingConfig;
 import com.bluebell.project.config.EntrancePricesConfig;
-import com.bluebell.project.dto.BookingCreateRequest;
-import com.bluebell.project.dto.BookingDto;
-import com.bluebell.project.dto.BookingSummaryDto;
-import com.bluebell.project.dto.BookingUpdateRequest;
+import com.bluebell.project.dto.*;
 import com.bluebell.project.model.Booking;
 import com.bluebell.project.repository.BookingRepository;
 import com.bluebell.project.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -107,7 +106,17 @@ public class BookingController {
     }
 
 
+    @GetMapping("/booked-dates")
+    public ResponseEntity<List<DateRangeDto>> getBookedDates(
+            @RequestParam String unitType) {
 
+        List<DateRangeDto> bookedDates = bookingRepository.findByUnitType(unitType)
+                .stream()
+                .map(b -> new DateRangeDto(b.getCheckIn(), b.getCheckOut()))
+                .toList();
 
+        return ResponseEntity.ok(bookedDates);
+
+    }
 
 }
