@@ -36,6 +36,10 @@ public class BookingCreateRequest {
 //    private String paymentStatus;
     private String bookStatus;
 
+    private String addOns;
+
+    private String leisureTime;
+
     // getters & setters
 
 
@@ -88,6 +92,22 @@ public class BookingCreateRequest {
 
     public void setBookStatus(String bookStatus) {
         this.bookStatus = bookStatus;
+    }
+
+    public String getAddOns() {
+        return addOns;
+    }
+
+    public void setAddOns(String addOns) {
+        this.addOns = addOns;
+    }
+
+    public String getLeisureTime() {
+        return leisureTime;
+    }
+
+    public void setLeisureTime(String leisureTime) {
+        this.leisureTime = leisureTime;
     }
 }
 
