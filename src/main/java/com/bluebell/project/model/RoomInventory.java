@@ -19,6 +19,9 @@ public class RoomInventory {
     @Column(name = "room_max_capacity")
     private int roomMaxCapacity;
 
+    @Column(name = "room_rate")
+    private double roomRate;
+
     public RoomInventory() {}
 
     public RoomInventory(String roomType, int totalRooms, int availableRooms, int roomMaxCapacity) {
@@ -49,5 +52,14 @@ public class RoomInventory {
 
     public void setRoomMaxCapacity(int roomMaxCapacity) {
         this.roomMaxCapacity = roomMaxCapacity;
+    }
+
+
+    public double getRoomRate() {
+        return roomRate;
+    }
+
+    public void setRoomRate(double roomRate) {
+        this.roomRate = roomRate;
     }
 }
