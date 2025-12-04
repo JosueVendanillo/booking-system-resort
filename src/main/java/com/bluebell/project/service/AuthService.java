@@ -33,8 +33,6 @@ public class AuthService {
         UserRole role;
         if (request.getRole() != null && request.getRole().equalsIgnoreCase("ADMIN")) {
             role = UserRole.ADMIN;
-        } else if (request.getRole() != null && request.getRole().equalsIgnoreCase("MODERATOR")) {
-            role = UserRole.MODERATOR;
         } else if (request.getRole() != null && request.getRole().equalsIgnoreCase("RECEPTIONIST")) {
             role = UserRole.RECEPTIONIST;
         } else if (request.getRole() != null && request.getRole().equalsIgnoreCase("MANAGER")){
@@ -44,6 +42,7 @@ public class AuthService {
         }
         User user = new User(request.getFullName(),request.getEmail(), hashed,role);
         userRepository.save(user);
+
     }
 
     public User findByEmail(String email) {
