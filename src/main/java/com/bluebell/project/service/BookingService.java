@@ -126,6 +126,8 @@ public class BookingService {
         b.setCheckOut(req.getCheckOut());
         b.setNoOfDays((int) noOfDays);
         b.setBookStatus("PENDING");
+        b.setAddOns(req.getAddOns());
+//        b.setLeisureTime(req.getLeisureTime);
 
         // Keep totalAmount from frontend for now (can later calculate by pricing rules)
         b.setTotalAmount(finalTotalAmount);
@@ -157,6 +159,7 @@ public class BookingService {
         double totalAmount = calculatePrice(req.getUnitType(), noOfDays);
         double finalTotalAmount = totalAmount + adultPrice + kidPrice;
 
+        System.out.println("UPDATE ============================================");
         System.out.println("Room Price: " + totalAmount);
         System.out.println("Adult Price: " + adultPrice);
         System.out.println("Kid(s) Price: " + kidPrice);
@@ -170,7 +173,8 @@ public class BookingService {
         existing.setCheckOut(req.getCheckOut());
         existing.setNoOfDays((int) noOfDays);
         existing.setTotalAmount(finalTotalAmount);
-
+//        existing.setAddOns(req.getAddOns());
+//        existing.setLeisureTime(req.getLeisureTime());
         Booking saved = repo.save(existing);
         return toDto(saved);
     }
@@ -185,7 +189,9 @@ public class BookingService {
         System.out.println("CHECKIN VALUE: " + checkIn);
         System.out.println("CHECKOUT VALUE: " + checkOut);
         if (checkIn == null || checkOut == null) throw new IllegalArgumentException("Dates required");
-        if (!checkOut.isAfter(checkIn)) throw new IllegalArgumentException("checkOut must be after checkIn");
+
+//        Transfer this to update()
+//        if (!checkOut.isAfter(checkIn)) throw new IllegalArgumentException("checkOut must be after checkIn");
 //        if (checkIn.isBefore(LocalDateTime.now().withSecond(0).withNano(0))) throw new IllegalArgumentException("checkIn cannot be in the past");
     }
 
@@ -225,6 +231,8 @@ public class BookingService {
         d.setTotalAmount(b.getTotalAmount());
         d.setPaymentStatus(b.getPaymentStatus());
         d.setBookStatus(b.getBookStatus());
+        d.setLeisureTime(b.getLeisureTime());
+        d.setAddOns(b.getAddOns());
         return d;
     }
 
@@ -248,11 +256,15 @@ public class BookingService {
         System.out.println("Check In     : " + request.getCheckIn());
         System.out.println("Check Out    : " + request.getCheckOut());
         System.out.println("Book Status: " + request.getBookStatus());
+        System.out.println("Leisure Time: " + request.getLeisureTime());
+        System.out.println("Add-Ons: " + request.getAddOns());
 
         if (request.getCustomer() != null) {
             System.out.println("Customer Name: " + request.getCustomer().getFullname());
             System.out.println("Email        : " + request.getCustomer().getEmail());
+            System.out.println("Gender  : " + request.getCustomer().getGender());
             System.out.println("Contact No   : " + request.getCustomer().getContactNumber());
+            System.out.println("Created By:  : " + request.getCustomer().getCreatedBy());
         } else {
             System.out.println("Customer     : null");
         }
