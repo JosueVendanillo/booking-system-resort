@@ -61,6 +61,11 @@ public class Booking {
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments = new ArrayList<>();
 
+    @Column(name = "leisure_Time") // day or night
+    private String LeisureTime;
+
+    @Column(name = "add_ons")
+    private String addOns;
 
     public Booking() {}
 
@@ -139,5 +144,21 @@ public class Booking {
 
     public void setBookStatus(String bookStatus) {
         this.bookStatus = bookStatus;
+    }
+
+    public String getLeisureTime() {
+        return LeisureTime;
+    }
+
+    public void setLeisureTime(String leisureTime) {
+        LeisureTime = leisureTime;
+    }
+
+    public String getAddOns() {
+        return addOns;
+    }
+
+    public void setAddOns(String addOns) {
+        this.addOns = addOns;
     }
 }
