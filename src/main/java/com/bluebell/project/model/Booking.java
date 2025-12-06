@@ -61,7 +61,7 @@ public class Booking {
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments = new ArrayList<>();
 
-    @Column(name = "leisure_Time") // day or night
+    @Column(name = "leisure_Time") // DAY or NIGHT
     private String LeisureTime;
 
     @Column(name = "add_ons")
