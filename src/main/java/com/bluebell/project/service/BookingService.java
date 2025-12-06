@@ -4,6 +4,8 @@ import com.bluebell.project.config.BookingConfig;
 import com.bluebell.project.config.EntrancePricesConfig;
 import com.bluebell.project.dto.BookingSummaryDto;
 import com.bluebell.project.model.CustomerInformation;
+import com.bluebell.project.model.LeisureTime;
+import com.bluebell.project.model.UserRole;
 import com.bluebell.project.repository.BookingRepository;
 import com.bluebell.project.dto.BookingCreateRequest;
 import com.bluebell.project.dto.BookingDto;
@@ -97,7 +99,7 @@ public class BookingService {
         preventOverlap(req.getUnitType(), req.getCheckIn(), req.getCheckOut(), null);
 
         showRequestDateTime(req);
-
+        String leisureTimeString = processLeisureTimeCreate(req);
 
         double kidPrice = req.getKids() * entrancePricesConfig.getKidsPrice();
         double adultPrice = req.getAdults() * entrancePricesConfig.getAdultPrice();
@@ -127,7 +129,7 @@ public class BookingService {
         b.setNoOfDays((int) noOfDays);
         b.setBookStatus("PENDING");
         b.setAddOns(req.getAddOns());
-//        b.setLeisureTime(req.getLeisureTime);
+        b.setLeisureTime(leisureTimeString);
 
         // Keep totalAmount from frontend for now (can later calculate by pricing rules)
         b.setTotalAmount(finalTotalAmount);
@@ -144,12 +146,25 @@ public class BookingService {
         return toDto(saved);
     }
 
+    private String processLeisureTimeCreate(BookingCreateRequest req) {
+
+        if(req.getLeisureTime().equalsIgnoreCase(String.valueOf(LeisureTime.DAY))){
+            return LeisureTime.DAY.toString();
+        }else if(req.getLeisureTime().equalsIgnoreCase(String.valueOf(LeisureTime.NIGHT))) {
+            return LeisureTime.NIGHT.toString();
+        }else{
+            return "UNSPECIFIED";
+        }
+
+    }
+
     @Transactional
     public BookingDto update(Long id, BookingUpdateRequest req) {
         Booking existing = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Booking not found"));
         validateDateOrder(req.getCheckIn(), req.getCheckOut());
         preventOverlap(req.getUnitType(), req.getCheckIn(), req.getCheckOut(), id);
 
+        String leisureTimeString = processLeisureTimeUpdate(req);
 
         double kidPrice = req.getKids() * entrancePricesConfig.getKidsPrice();
         double adultPrice = req.getAdults() * entrancePricesConfig.getAdultPrice();
@@ -173,10 +188,22 @@ public class BookingService {
         existing.setCheckOut(req.getCheckOut());
         existing.setNoOfDays((int) noOfDays);
         existing.setTotalAmount(finalTotalAmount);
-//        existing.setAddOns(req.getAddOns());
-//        existing.setLeisureTime(req.getLeisureTime());
+        existing.setAddOns(req.getAddOns());
+        existing.setLeisureTime(leisureTimeString);
         Booking saved = repo.save(existing);
         return toDto(saved);
+    }
+
+    private String processLeisureTimeUpdate(BookingUpdateRequest req) {
+
+        if(req.getLeisureTime().equalsIgnoreCase(String.valueOf(LeisureTime.DAY))){
+            return LeisureTime.DAY.toString();
+        }else if(req.getLeisureTime().equalsIgnoreCase(String.valueOf(LeisureTime.NIGHT))) {
+            return LeisureTime.NIGHT.toString();
+        }else{
+            return "N/A";
+        }
+
     }
 
     @Transactional
