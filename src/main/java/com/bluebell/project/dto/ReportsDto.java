@@ -1,5 +1,7 @@
 package com.bluebell.project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
 public class ReportsDto {
@@ -14,6 +16,8 @@ public class ReportsDto {
     private double damageAmount;
 
 
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private LocalDateTime date;
 
 
