@@ -2,6 +2,7 @@ package com.bluebell.project.controller;
 
 import com.bluebell.project.dto.PaymentCreateRequest;
 import com.bluebell.project.dto.PaymentDto;
+import com.bluebell.project.service.PayMongoService;
 import com.bluebell.project.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,9 @@ import java.util.List;
 @RequestMapping("/api/payments")
 //@CrossOrigin(origins = "http://localhost:4173") // React dev server
 public class PaymentController {
+
+    @Autowired
+    private PayMongoService payMongoService;
 
     @Autowired
     private PaymentService paymentService;
@@ -66,6 +70,8 @@ public class PaymentController {
         PaymentDto completedPayment = paymentService.completeRemainingPayment(bookingCode, paymentMethod,referenceNumber);
         return ResponseEntity.ok(completedPayment);
     }
+
+
 
 
 
