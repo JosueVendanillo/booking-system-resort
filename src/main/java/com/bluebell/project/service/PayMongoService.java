@@ -3,6 +3,7 @@ package com.bluebell.project.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,14 +17,9 @@ import java.util.Map;
 @Service
 public class PayMongoService {
 
-        private static final String PAYMONGO_SECRET_KEY = "sk_test_1rS1F8iNHs6W7Ky6ECJqJpQU";
+    @Value("${paymongo.secret.key}")
+    private String PAYMONGO_SECRET_KEY ;
 
-//                "sk_live_ZEiKjRKWNAu5AHfm6VQUVpZE"; // LIVE - mar
-
-
-//                "sk_live_wbfsG4B1C8ySwcGm2pnP7YWM"; //LIVE - josue
-
-//            "sk_test_1rS1F8iNHs6W7Ky6ECJqJpQU"; //  TEST
     private static final String API_BASE = "https://api.paymongo.com/v1/payment_intents";
 
     private static final String PAYMENT_METHODS_API = "https://api.paymongo.com/v1/payment_methods";
